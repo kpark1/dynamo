@@ -38,8 +38,8 @@ timestamp = int(time.time()) / interval * interval
 start = (int(time.time())/ interval - 1)*interval
 
 # Small txt-based database
-tempfile = "overwrite_unfinished.txt"
-expired_empty = "expired_empty.txt"
+tempfile = "%s/overwrite_unfinished.txt" % rrd_dir
+expired_empty = "%s/expired_empty.txt" % rrd_dir
 
 request_ids = []
 idcheck = []
@@ -113,7 +113,7 @@ def get_query(filename):
 
     return array
 
-array_unfinished = get_query("unfinished.txt")
+array_unfinished = get_query("%s/unfinished.txt" % rrd_dir)
 
 #Create new CSV file with columns: ||Run_ID||Dataset_Name||Site||Copied||Size||Complete|| -> strictly incomplete subscriptions written to this file.
 if not os.path.exists("%s/rrd/filelist.txt" % rrd_dir):
@@ -237,6 +237,9 @@ for existing_rrd in existing_rrds:
     if existing_rrd not in unfinished_rrds and filetime < older_than:
         # Delete pngs and rrd files
         subprocess.call("rm -f %s" % existing_rrd, shell=True) 
-        
+
+
+subprocess.call("rm -f /var/www/html/dynamo/dynamo/dealermon/monitoring_phedex/T*/*rrd", shell=True)
+subprocess.call("cp -r /var/spool/dynamo/track_phedex/T* /var/www/html/dynamo/dynamo/dealermon/monitoring_phedex/", shell=True)        
 
 print "DONE."
